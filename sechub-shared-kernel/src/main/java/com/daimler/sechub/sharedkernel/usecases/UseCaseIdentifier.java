@@ -99,6 +99,8 @@ public enum UseCaseIdentifier {
 	
 	UC_USER_RETRIEVES_PROJECT_MOCKDATA_CONFIGURATION,
 	
+	UC_ADMIN_CHECKS_SERVER_VERSION,
+
 	;
 
 	/* +-----------------------------------------------------------------------+ */
