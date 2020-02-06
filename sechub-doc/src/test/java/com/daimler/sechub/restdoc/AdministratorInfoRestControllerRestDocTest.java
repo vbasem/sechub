@@ -3,18 +3,10 @@ package com.daimler.sechub.restdoc;
 
 import static com.daimler.sechub.test.TestURLBuilder.https;
 import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.daimler.sechub.docgen.util.RestDocPathFactory;
-import com.daimler.sechub.domain.administration.scheduler.SchedulerStatusEntryKeys;
-import com.daimler.sechub.domain.administration.status.ListStatusService;
-import com.daimler.sechub.domain.administration.status.StatusEntry;
-import com.daimler.sechub.domain.administration.user.UserAdministrationRestController;
 import com.daimler.sechub.server.AdministratorInfoRestController;
 import com.daimler.sechub.server.InfoService;
 import com.daimler.sechub.sharedkernel.Profiles;
@@ -77,23 +64,6 @@ public class AdministratorInfoRestControllerRestDocTest {
 				).
 					andExpect(status().isOk()).
 					andExpect(content().string(SERVER_VERSION)
-				);
-		/* @formatter:on */
-	}
-	
-	@Test
-	@UseCaseRestDoc(useCase = UseCaseAdministratorChecksServerVersion.class)
-	public void restdoc_admin_get_server_version_default() throws Exception {
-		/* prepare */
-		String defaultVersion = "0.0.0-development";
-		
-		/* execute + test @formatter:off */
-		this.mockMvc.perform(
-				get(https(PORT_USED).buildGetServerVersionUrl()).
-					contentType(MediaType.TEXT_PLAIN_VALUE)
-				).
-					andExpect(status().isOk()).
-					andExpect(content().string(defaultVersion)
 				);
 		/* @formatter:on */
 	}
