@@ -1,11 +1,11 @@
 package com.daimler.sechub.adapter.mock;
 
-import com.daimler.sechub.adapter.AdapterConfig;
-
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.daimler.sechub.adapter.AdapterConfig;
 
 public class AbstractMockedAdapterTest {
 
@@ -49,7 +49,7 @@ public class AbstractMockedAdapterTest {
 			return super.getMockDataFileEnding();
 		}
 		@Override
-		public int getAdapterVersion() {
+		public int getVersion() {
 			return 10;
 		}
 		

@@ -45,7 +45,7 @@ public class MockedAdapterSetupService {
 		String pathToResult = adapter.getPathToMockResultFile(result);
 		
 		MockedAdapterSetupEntry entry = new MockedAdapterSetupEntry();
-		entry.setAdapterId(adapter.createAdapterId());
+		entry.setAdapterId(createAdapterId(adapter));
 		
 		/* we create the mock setup dynamically:*/
 		MockedAdapterSetupCombination combination = new MockedAdapterSetupCombination();
@@ -59,9 +59,13 @@ public class MockedAdapterSetupService {
 		
 		return entry;
 	}
-
-	private <A extends AdapterContext<C>, C extends AdapterConfig> MockedAdapterSetupEntry createStaticResultByTargets(AbstractMockedAdapter<A, C> adapter) {
-		String adapterId = adapter.createAdapterId();
+	
+	private String createAdapterId(AbstractMockedAdapter<?, ?> adapter) {
+        return adapter.getName()+":V"+adapter.getVersion();
+    }
+	
+    private <A extends AdapterContext<C>, C extends AdapterConfig> MockedAdapterSetupEntry createStaticResultByTargets(AbstractMockedAdapter<A, C> adapter) {
+		String adapterId = createAdapterId(adapter);
 		ensureSetupLoaded();
 		return staticMockSetup.getEntryFor(adapterId);
 	}

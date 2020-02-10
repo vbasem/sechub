@@ -58,12 +58,12 @@ public abstract class WaitForStateSupport<X extends AdapterContext<C>, C extends
 	 */
 	public final void waitForOK(X context) throws AdapterException {
 		AdapterConfig config = context.getConfig();
-		LOG.debug("{} wait for OK", adapter.getAdapterLogId(config));
+		LOG.debug("{} wait for OK", config.getTraceID());
 		String state = null;
 		try {
 			while (isWaitingForOKWhenInState(state = getCurrentState(context), context)) {
 				if (context.isTimeOut()) {
-					throw adapter.asAdapterException(
+					throw AdapterUtil.asAdapterException(adapter,
 							"Time out reached:" + context.getMillisecondsRun() + " millis run.", config);
 				}
 				waitForResult(context);
@@ -71,9 +71,9 @@ public abstract class WaitForStateSupport<X extends AdapterContext<C>, C extends
 			handleNoLongerWaitingState(state, context);
 			
 		} catch (HttpClientErrorException e) {
-			throw adapter.asAdapterException("Waiting for result failed - response body was: "+e.getResponseBodyAsString(), e, config);
+			throw AdapterUtil.asAdapterException(adapter,"Waiting for result failed - response body was: "+e.getResponseBodyAsString(), e, config);
 		} catch (Exception e) {
-			throw adapter.asAdapterException("Waiting for result failed", e, config);
+			throw AdapterUtil.asAdapterException(adapter, "Waiting for result failed", e, config);
 		}
 	}
 
@@ -83,12 +83,12 @@ public abstract class WaitForStateSupport<X extends AdapterContext<C>, C extends
 			throw new IllegalStateException("config is null!");
 		}
 		try {
-			LOG.trace("{}  wait for result-STARTED", adapter.getAdapterLogId(config));
+			LOG.trace("{}  wait for result-STARTED", config.getTraceID());
 			Thread.sleep(config.getTimeToWaitForNextCheckOperationInMilliseconds());
-			LOG.trace("{}  wait for result-DONE", adapter.getAdapterLogId(config));
+			LOG.trace("{}  wait for result-DONE", config.getTraceID());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw adapter.asAdapterException("Waiting was interrupted", e, config);
+			throw AdapterUtil.asAdapterException(adapter,"Waiting was interrupted", e, config);
 		}
 
 	}

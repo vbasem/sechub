@@ -41,7 +41,7 @@ public abstract class AbstractAdapterContext<C extends AdapterConfig, A extends 
 	
 	@Override
 	public AdapterException asAdapterException(String message, Throwable t) {
-		return adapter.asAdapterException(message, t, getConfig());
+		return AdapterUtil.asAdapterException(adapter, message, t, getConfig());
 	}
 
 	@Override
@@ -51,7 +51,12 @@ public abstract class AbstractAdapterContext<C extends AdapterConfig, A extends 
 
 	@Override
 	public String getAPIURL(String apiPart, Map<String, String> map) {
-		return this.adapter.createAPIURL(apiPart, this.config, map);
+	    if (adapter instanceof AbstractAdapter) {
+	        @SuppressWarnings("unchecked")
+            AbstractAdapter<?,C> aa = (AbstractAdapter<?, C>) adapter;
+	        return aa.createAPIURL(apiPart, this.config, map);
+	    }
+		throw new IllegalStateException("Adapter not an abstract one - so cannot automatically create api URL!");
 	}
 
 	@Override

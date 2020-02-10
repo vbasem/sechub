@@ -41,7 +41,7 @@ public class MockedNetsparkerAdapter extends AbstractMockedAdapter<NetsparkerAda
 	}
 	
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 

@@ -33,7 +33,7 @@ public class MockedNessusAdapter extends AbstractMockedAdapter<NessusAdapterCont
 	}
 	
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 

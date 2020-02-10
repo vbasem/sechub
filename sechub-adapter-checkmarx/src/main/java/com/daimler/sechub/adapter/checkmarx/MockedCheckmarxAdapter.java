@@ -38,7 +38,7 @@ public class MockedCheckmarxAdapter extends AbstractMockedAdapter<CheckmarxAdapt
 	}
 
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 

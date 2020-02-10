@@ -11,6 +11,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.daimler.sechub.adapter.Adapter;
 import com.daimler.sechub.adapter.AdapterException;
+import com.daimler.sechub.adapter.AdapterUtil;
 import com.daimler.sechub.adapter.SpringUtilFactory;
 import com.daimler.sechub.adapter.TraceIdProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,12 +55,12 @@ public class JSONAdapterSupport {
 		try {
 			JsonNode node = objectMapper.readTree(content);
 			if (node == null) {
-				throw adapter.asAdapterException("Node not readable, so not valid JSON", provider);
+				throw AdapterUtil.asAdapterException(adapter,"Node not readable, so not valid JSON", provider);
 			}
 			return new Access("",node);
 
 		} catch (IOException e) {
-			throw adapter.asAdapterException("Was not able read content as JSON", e, provider);
+			throw AdapterUtil.asAdapterException(adapter,"Was not able read content as JSON", e, provider);
 		}
 	}
 
@@ -79,7 +80,7 @@ public class JSONAdapterSupport {
 				/* this can happen only in test cases */
 				throw new IllegalStateException("No adapter set, adapter exception would be:"+message);
 			}
-			throw adapter.asAdapterException(message, provider);
+			throw AdapterUtil.asAdapterException(adapter,message, provider);
 		}
 		return new Access("array:"+index, result);
 	}
@@ -92,7 +93,7 @@ public class JSONAdapterSupport {
 				/* this can happen only in test cases */
 				throw new IllegalStateException("No adapter set, adapter exception would be:"+message);
 			}
-			throw adapter.asAdapterException(message, provider);
+			throw AdapterUtil.asAdapterException(adapter,message, provider);
 		}
 		return new Access(nodeName, result);
 	}
@@ -104,7 +105,7 @@ public class JSONAdapterSupport {
 		
 		public Access(String nodeName, JsonNode node) throws AdapterException {
 			if (node == null) {
-				throw adapter.asAdapterException("Node is null!", provider);
+				throw AdapterUtil.asAdapterException(adapter,"Node is null!", provider);
 			}
 			this.node = node;
 			this.nodeName=nodeName;
@@ -129,7 +130,7 @@ public class JSONAdapterSupport {
 		public Access fetchArrayElement(int index) throws AdapterException {
 			JsonNode element = asArray().get(index);
 			if (element == null) {
-				throw adapter.asAdapterException("No array element found on index=" + index, provider);
+				throw AdapterUtil.asAdapterException(adapter,"No array element found on index=" + index, provider);
 			}
 			return new Access(nodeName+"["+index+"]",element);
 		}
@@ -148,7 +149,7 @@ public class JSONAdapterSupport {
 			}
 			if (result == null) {
 				/* not found */
-				throw adapter.asAdapterException("Was not able to find element '" + fieldName+"'", provider);
+				throw AdapterUtil.asAdapterException(adapter,"Was not able to find element '" + fieldName+"'", provider);
 			}
 			return new Access(fieldName, result);
 		}
@@ -175,7 +176,7 @@ public class JSONAdapterSupport {
 
 		public ArrayNode asArray() throws AdapterException {
 			if (!node.isArray()) {
-				throw adapter.asAdapterException("Node '"+nodeName+"' is not an array!", provider);
+				throw AdapterUtil.asAdapterException(adapter,"Node '"+nodeName+"' is not an array!", provider);
 			}
 			return (ArrayNode) node;
 		}
@@ -186,7 +187,7 @@ public class JSONAdapterSupport {
 		try {
 			return objectMapper.readValue(json, wanted);
 		} catch (Exception e) {
-			throw adapter.asAdapterException("Was not able to process given json", e, provider);
+			throw AdapterUtil.asAdapterException(adapter,"Was not able to process given json", e, provider);
 		}
 	}
 	
@@ -194,7 +195,7 @@ public class JSONAdapterSupport {
 		try {
 			return objectMapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw adapter.asAdapterException("Was not able to process given object", e, provider);
+			throw AdapterUtil.asAdapterException(adapter,"Was not able to process given object", e, provider);
 		}
 	}
 	
@@ -202,7 +203,7 @@ public class JSONAdapterSupport {
 		try {
 			return objectMapper.writeValueAsString(map);
 		} catch (JsonProcessingException e) {
-			throw adapter.asAdapterException("Was not able to process given map", e, provider);
+			throw AdapterUtil.asAdapterException(adapter,"Was not able to process given map", e, provider);
 		}
 	}
 }

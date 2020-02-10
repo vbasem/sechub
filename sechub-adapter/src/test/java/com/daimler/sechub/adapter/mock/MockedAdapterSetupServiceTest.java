@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 package com.daimler.sechub.adapter.mock;
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.util.HashMap;
@@ -38,8 +38,10 @@ public class MockedAdapterSetupServiceTest {
 		AbstractMockedAdapter mockedNetsparkerAdapter = mock(AbstractMockedAdapter.class);
 		AbstractAdapterConfig config = mock(AbstractAdapterConfig.class);
 		
-		when(mockedCheckmarxAdapter.createAdapterId()).thenReturn("MockedNessusAdapter");
-		when(mockedNetsparkerAdapter.createAdapterId()).thenReturn("MockedNetsparkerAdapter");
+		when(mockedCheckmarxAdapter.getName()).thenReturn("MockedCheckmarxAdapter");
+		when(mockedCheckmarxAdapter.getVersion()).thenReturn(1);
+		when(mockedNetsparkerAdapter.getName()).thenReturn("MockedNetsparkerAdapter");
+		when(mockedNetsparkerAdapter.getVersion()).thenReturn(1);
 		
 		/* execute */
 		MockedAdapterSetupEntry checkmarxSetup = serviceToTest.getSetupFor(mockedCheckmarxAdapter,config);
@@ -59,8 +61,6 @@ public class MockedAdapterSetupServiceTest {
 		/* prepare */
 		AbstractMockedAdapter mockedCheckmarxAdapter = mock(AbstractMockedAdapter.class);
 		AbstractAdapterConfig config = mock(AbstractAdapterConfig.class);
-		
-		when(mockedCheckmarxAdapter.createAdapterId()).thenReturn("MockedNessusAdapter");
 		
 		Map<AdapterOptionKey, String> options = new HashMap<>();
 		options.put(AdapterOptionKey.MOCK_CONFIGURATION_RESULT, "yellow");

@@ -23,7 +23,6 @@ import org.springframework.web.client.RestOperations;
 
 import com.daimler.sechub.adapter.AbstractAdapter;
 import com.daimler.sechub.adapter.AdapterException;
-import com.daimler.sechub.adapter.AdapterLogId;
 import com.daimler.sechub.adapter.AdapterProfiles;
 import com.daimler.sechub.adapter.WaitForStateSupport;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -79,7 +78,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 	}
 	
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 
@@ -93,9 +92,8 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 	}
 
 	private void startExport(NessusContext context) throws AdapterException {
+	    LOG.debug("{} started scan result export", context.getTraceID());
 		NessusAdapterConfig config = context.getConfig();
-		AdapterLogId adapterLogId = getAdapterLogId(config);
-		LOG.debug("{} started scan result export", adapterLogId);
 
 		String apiUrl = createScanExportApiURL(context);
 		String json = "{\n" + "	\"history_id\": " + context.getHistoryId() + ",\n" + "	\"format\":\"nessus\"\n" + "}\n"
@@ -111,7 +109,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 		}
 		String fileId = context.json().fetch("file", response).asText();
 		context.setExportFileId(fileId);
-		LOG.debug("{} fetched export data, fileId={}", adapterLogId, fileId);
+		LOG.debug("{} fetched export data, fileId={}", context.getTraceID(), fileId);
 
 	}
 
@@ -153,7 +151,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 			ResponseEntity<String> response = context.getRestOperations().postForEntity(apiUrl, request, String.class);
 			/* resolve token from response */
 			String body = response.getBody();
-			LOG.debug("{} resulted response body was '{}'", getAdapterLogId(context), body);
+			LOG.debug("{} resulted response body was '{}'", context.getTraceID(), body);
 			String scanUUID = extractScanUUID(context, body);
 			context.setProductContextId(scanUUID);
 
@@ -164,7 +162,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 
 	String extractScanUUID(NessusAdapterContext context, String body) throws AdapterException {
 		String scanUUID = context.json().fetch("scan_uuid", body).asText();
-		LOG.debug("{} resulted scanId uuid '{}'", getAdapterLogId(context), scanUUID);
+		LOG.debug("{} resulted scanId uuid '{}'", context.getTraceID(), scanUUID);
 		return scanUUID;
 	}
 
@@ -174,29 +172,29 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 
 	String createGetHistoryIdsApiURL(NessusAdapterContext context) {
 		String part = MessageFormat.format(MSG_APICALL_GET_HISTORY_IDS, Long.toString(context.getNessusScanId()));
-		return createAPIURL(part, context);
+		return createAPIURL(part, context.getConfig());
 	}
 
 	String createLaunchApiURL(NessusAdapterContext context) {
 		String part = MessageFormat.format(MSG_APICALL_LAUNCH_SCAN, Long.toString(context.getNessusScanId()));
-		return createAPIURL(part, context);
+		return createAPIURL(part, context.getConfig());
 	}
 
 	String createScanExportApiURL(NessusAdapterContext context) {
 		String part = MessageFormat.format(MSG_APICALL_EXPORT_SCAN, Long.toString(context.getNessusScanId()));
-		return createAPIURL(part, context);
+		return createAPIURL(part, context.getConfig());
 	}
 
 	String createScanExportStatusApiURL(NessusAdapterContext context) {
 		String part = MessageFormat.format(MSG_APICALL_EXPORT_SCAN_STATUS, Long.toString(context.getNessusScanId()),
 				context.getExportFileId());
-		return createAPIURL(part, context);
+		return createAPIURL(part, context.getConfig());
 	}
 
 	String createScanExportDownloadApiURL(NessusAdapterContext context) {
 		String part = MessageFormat.format(MSG_APICALL_EXPORT_SCAN_DOWNLOAD, Long.toString(context.getNessusScanId()),
 				context.getExportFileId());
-		return createAPIURL(part, context);
+		return createAPIURL(part, context.getConfig());
 	}
 
 	void addNewScan(NessusAdapterContext context) throws AdapterException {
@@ -213,9 +211,9 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 			ResponseEntity<String> response = context.getRestOperations().postForEntity(apiUrl, request, String.class);
 			/* resolve token from response */
 			String body = response.getBody();
-			LOG.debug("{} resulted response body was '{}'", config.getTraceID(), body);
+			LOG.debug("{} resulted response body was '{}'", context.getTraceID(), body);
 			long scanId = context.json().fetch("scan", body).fetch("id").asLong();
-			LOG.debug("{} resulted scanId is '{}'", config.getTraceID(), scanId);
+			LOG.debug("{} resulted scanId is '{}'", context.getTraceID(), scanId);
 			context.setNessusScanId(scanId);
 
 		} catch (HttpClientErrorException e) {
@@ -229,8 +227,8 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 		/* @formatter:off */
 		return createNewScanJSONBuilder().
 				uuid(context.getNessusPolicyUID()).
-				name(config.getTraceID()+"_"+config.getTargetType()).
-				description("SecHub scan "+config.getTraceID()+" for target type "+config.getTargetType()).
+				name(context.getTraceID()+"_"+config.getTargetType()).
+				description("SecHub scan "+context.getTraceID()+" for target type "+config.getTargetType()).
 				targetsURIs(config.getTargetURIs()).
 				targetIPs(config.getTargetIPs()).build();
 		/* @formatter:on */
@@ -284,7 +282,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 	 */
 	void loginAndFetchToken(NessusAdapterContext context) throws AdapterException {
 		NessusAdapterConfig config = context.getConfig();
-		String traceID = config.getTraceID();
+		String traceID = context.getTraceID();
 
 		LOG.debug("{} start login at {}", traceID, config.getProductBaseURL());
 
@@ -318,7 +316,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 
 	String fetchPoliciesBody(NessusAdapterContext context) throws AdapterException {
 		NessusAdapterConfig config = context.getConfig();
-		String traceID = config.getTraceID();
+		String traceID = context.getTraceID();
 
 		LOG.debug("{} start scanning for list of policies at {}", traceID, config.getProductBaseURL());
 
@@ -380,11 +378,11 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 		protected void handleNoLongerWaitingState(String state, NessusAdapterContext context) throws AdapterException {
 			NessusAdapterConfig config = context.getConfig();
 			if (NessusState.COMPLETE.isRepresentedBy(state)) {
-				LOG.debug("{}  completed", getAdapterLogId(config));
+				LOG.debug("{}  completed", context.getTraceID());
 				return;
 			}
 			if (NessusState.CANCELED.isRepresentedBy(state)) {
-				LOG.debug("{} canceled", getAdapterLogId(config));
+				LOG.debug("{} canceled", context.getTraceID());
 				throw asAdapterCanceledByUserException(config);
 			}
 			throw asAdapterException(state + " is wellknown but not handled by adapter!", config);
@@ -396,8 +394,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 			String historyID = ensureHistoryIdInContext(context);
 
 			String body = "{\"history_id\":\"" + historyID + "\"}";
-			AdapterLogId adapterLogId = getAdapterLogId(context.getConfig());
-			LOG.debug("{} try to fetch history information for '{}'", adapterLogId, historyID);
+			LOG.debug("{} try to fetch history information for '{}'", context.getTraceID(), historyID);
 			String apiUrl = createGetHistoryInfoApiURL(context);
 
 			/* strange but necessary for NESSUS: a HTTP GET with a body... */
@@ -410,7 +407,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 				throw new NessusRESTFailureException(response.getStatusCode(), response.getBody());
 			}
 			String status = context.json().fetch("info", response).fetch("status").asText();
-			LOG.debug("{} found status {}", adapterLogId, status);
+			LOG.debug("{} found status {}", context.getTraceID(), status);
 			return status;
 		}
 	}
@@ -437,7 +434,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 
 			String result = response.getBody();
 			context.setResult(result);
-			LOG.debug("{} fetched export status, result={}", getAdapterLogId(context), context.getResult());
+			LOG.debug("{} fetched export status, result={}", context.getTraceID(), context.getResult());
 
 		}
 
@@ -452,7 +449,7 @@ public class NessusAdapterV1 extends AbstractAdapter<NessusAdapterContext, Nessu
 
 			String state = context.json().fetch("status", response).asText();
 
-			LOG.debug("{} fetched export status, fileId={}, state={}", getAdapterLogId(context),
+			LOG.debug("{} fetched export status, fileId={}, state={}", context.getTraceID(),
 					context.getExportFileId(), state);
 
 			return state;

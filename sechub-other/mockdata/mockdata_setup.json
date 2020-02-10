@@ -1,7 +1,7 @@
 {
     "entries": [
         {
-            "adapterId": "MockedNetsparkerAdapter",
+            "adapterId": "MockedNetsparkerAdapter:V1",
             "combinations": [
                 {
                     "target": "https://netsparker.longrunning.but.green.demo.example.org",
@@ -42,7 +42,7 @@
             ]
         },
         {
-            "adapterId": "MockedCheckmarxAdapter",
+            "adapterId": "MockedCheckmarxAdapter:V1",
             "combinations": [
                 {
                     "target": "../../../../../sechub-integrationtest/src/test/resources/checksum-testfiles",
@@ -65,7 +65,7 @@
             ]
         },
         {
-            "adapterId": "MockedNessusAdapter",
+            "adapterId": "MockedNessusAdapter:V1",
             "combinations": [
                 {
                     "target": "https://nessus.longrunning.but.green.demo.example.org",

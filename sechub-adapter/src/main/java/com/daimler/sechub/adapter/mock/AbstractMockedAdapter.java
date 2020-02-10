@@ -32,7 +32,7 @@ public abstract class AbstractMockedAdapter<A extends AdapterContext<C>,C extend
 	}
 	
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 
@@ -99,25 +99,15 @@ public abstract class AbstractMockedAdapter<A extends AdapterContext<C>,C extend
 	 */
 	protected abstract void validateConfigAsDefinedInMockYAML(C config);
 
-	public String getAdapterId() {
-		return createAdapterId();
-	}
-
-	@Override
-	protected String createAdapterId() {
-		/* currently same as in normal adapters but to ensure we got simple names here always - even when changed in adapters - this is overridden*/
-		return getClass().getSimpleName();
-	}
-
 	/**
-	 * Standard implementation will return path like <code>"/adapter/mockdata/v$versionNr/$SimpleNameOfMockedAdapterClass/$TrafficLightName.xml"</code><br>
+	 * Standard implementation will return path like <code>"/adapter/mockdata/mockadaptername/v$versionNr/$TrafficLightName.xml"</code><br>
 	 * <br>
-	 * An example:<code>"/adapter/mockdata/v1/MockedNetspakerAdapter/green.xml</code>
+	 * An example:<code>"/adapter/mockdata/MockedNetspakerAdapter/v1/green.xml</code>
 	 * @param wantedTrafficLight
 	 * @return
 	 */
 	protected String getPathToMockResultFile(String wantedTrafficLight) {
-		return "/adapter/mockdata/"+createAdapterId()+"/v"+getAdapterVersion()+"/"+wantedTrafficLight+"."+getMockDataFileEnding();
+		return "/adapter/mockdata/"+getName()+"/v"+getVersion()+"/"+wantedTrafficLight+"."+getMockDataFileEnding();
 	}
 	
 	protected String getMockDataFileEnding() {

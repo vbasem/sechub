@@ -37,6 +37,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import com.daimler.sechub.adapter.Adapter;
 import com.daimler.sechub.adapter.AdapterException;
+import com.daimler.sechub.adapter.AdapterUtil;
 import com.daimler.sechub.adapter.TrustAllConfig;
 
 /**
@@ -127,7 +128,7 @@ public class TrustAllSupport {
 
 			return sslContext;
 		} catch (NoSuchAlgorithmException | KeyManagementException e) {
-			throw adapter.asAdapterException("Was not able to initialize a trust all ssl context", e, config);
+			throw AdapterUtil.asAdapterException(adapter,"Was not able to initialize a trust all ssl context", e, config);
 		}
 
 	}

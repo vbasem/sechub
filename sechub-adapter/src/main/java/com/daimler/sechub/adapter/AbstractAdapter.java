@@ -8,7 +8,6 @@ import com.daimler.sechub.adapter.support.JSONAdapterSupport;
 
 public abstract class AbstractAdapter<A extends AdapterContext<C>,C extends AdapterConfig> implements Adapter<C> {
 
-	private String adapterId;
 	private APIURLSupport apiURLSupport;
 
 	protected AbstractAdapter() {
@@ -18,32 +17,17 @@ public abstract class AbstractAdapter<A extends AdapterContext<C>,C extends Adap
 		return new JSONAdapterSupport(this, provider);
 	}
 	
-	public AdapterCanceledByUserException asAdapterCanceledByUserException(TraceIdProvider provider) {
-		return new AdapterCanceledByUserException(getAdapterLogId(provider));
+	protected AdapterCanceledByUserException asAdapterCanceledByUserException(TraceIdProvider provider) {
+		return new AdapterCanceledByUserException(this,provider);
 	}
 
-	public AdapterException asAdapterException(String message, TraceIdProvider provider) {
+	protected AdapterException asAdapterException(String message, TraceIdProvider provider) {
 		return asAdapterException(message, null, provider);
 	}
 
-	public AdapterException asAdapterException(String message, Throwable t, TraceIdProvider provider) {
-		return AdapterException.asAdapterException(getAdapterLogId(provider), message, t);
+	protected AdapterException asAdapterException(String message, Throwable t, TraceIdProvider provider) {
+		return AdapterException.asAdapterException(this, message,t,provider);
 	}
-
-	@Override
-	public final AdapterLogId getAdapterLogId(TraceIdProvider config) {
-		if (adapterId == null) {
-			adapterId = createAdapterId();
-		}
-		String traceID = config == null ? null : config.getTraceID();
-		return new AdapterLogId(adapterId, traceID);
-	}
-
-	protected String createAdapterId() {
-		return getClass().getSimpleName();
-	}
-	
-	
 
 	/**
 	 * @param api

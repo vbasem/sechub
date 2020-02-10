@@ -23,7 +23,7 @@ public class TestAdapter extends AbstractAdapter<TestAdapterContextInterface, Te
 	}
 	
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 

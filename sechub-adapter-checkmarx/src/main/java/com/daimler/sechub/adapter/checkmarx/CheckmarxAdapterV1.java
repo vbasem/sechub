@@ -55,7 +55,7 @@ public class CheckmarxAdapterV1 extends AbstractAdapter<CheckmarxAdapterContext,
 
 	}
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 

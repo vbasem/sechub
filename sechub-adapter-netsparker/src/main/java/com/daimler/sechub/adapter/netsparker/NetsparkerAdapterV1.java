@@ -70,7 +70,7 @@ public class NetsparkerAdapterV1 extends AbstractAdapter<NetsparkerAdapterContex
 	}
 	
 	@Override
-	public int getAdapterVersion() {
+	public int getVersion() {
 		return 1;
 	}
 
@@ -234,15 +234,15 @@ public class NetsparkerAdapterV1 extends AbstractAdapter<NetsparkerAdapterContex
 				throws Exception {
 			NetsparkerAdapterConfig config = context.getConfig();
 			if (NetsparkerState.COMPLETE.isRepresentedBy(state)) {
-				LOG.debug("{}  completed", getAdapterLogId(config));
+				LOG.debug("{}  completed", context.getTraceID());
 				return;
 			}
 			if (NetsparkerState.CANCELED.isRepresentedBy(state)) {
-				LOG.debug("{} canceled", getAdapterLogId(config));
+				LOG.debug("{} canceled", context.getTraceID());
 				throw asAdapterCanceledByUserException(config);
 			}
 			if (NetsparkerState.FAILED.isRepresentedBy(state)) {
-				LOG.debug("{} failed", getAdapterLogId(config));
+				LOG.debug("{} failed", context.getTraceID());
 				throw asAdapterException("Execution failed, see log files in netsparker for details", config);
 			}
 			throw asAdapterException(state + " is wellknown but not handled by adapter!", config);

@@ -2,7 +2,6 @@
 package com.daimler.sechub.adapter;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
@@ -33,13 +32,8 @@ public class JSONAdapterSupportTest {
 		provider = mock(TraceIdProvider.class);
 		adapter = mock(Adapter.class);
 
-		AdapterLogId logId = new AdapterLogId("id", "traceid");
 		supportToTest = new JSONAdapterSupport(adapter, provider);
-		when(adapter.asAdapterException(any(String.class), eq(provider))).thenReturn(new AdapterException(logId, "message"));
-		when(adapter.asAdapterException(any(String.class), any(Throwable.class), eq(provider))).thenReturn(new AdapterException(logId, "message-with-throwable"));
-		when(adapter.getAdapterLogId(eq(provider))).thenReturn(logId);
 	}
-
 
 
 	@Test
